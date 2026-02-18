@@ -6,7 +6,6 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.util.ModelUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,6 +26,8 @@ public class FilmController {
 
     private final Map<Long, Film> films = new HashMap<>();
 
+    private long newFilmId = 1;
+
     @GetMapping
     public Collection<Film> getAllFilms() {
         log.info("getAllFilms: {}", films.size());
@@ -37,7 +38,7 @@ public class FilmController {
     public Film createFilm(@Valid @RequestBody Film film, Errors errors) {
         checkData(film, errors);
 
-        film.setId(ModelUtil.getNextId(films));
+        film.setId(newFilmId++);
 
         films.put(film.getId(), film);
         log.info("createFilm: {}", film);

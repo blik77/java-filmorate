@@ -6,7 +6,6 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.util.ModelUtil;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -22,6 +21,8 @@ public class UserController {
 
     private final Map<Long, User> users = new HashMap<>();
 
+    private long newUserId = 1;
+
     @GetMapping
     public Collection<User> getAllUsers() {
         log.info("getAllUsers: {}", users.size());
@@ -32,7 +33,7 @@ public class UserController {
     public User createUser(@Valid @RequestBody User user, Errors errors) {
         checkData(user, errors);
 
-        user.setId(ModelUtil.getNextId(users));
+        user.setId(newUserId++);
 
         users.put(user.getId(), user);
         log.info("createUser: {}", user);
