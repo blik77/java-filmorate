@@ -7,15 +7,14 @@ import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Errors;
-
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.Set;
-
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -24,20 +23,19 @@ public class FilmControllerTest {
     private FilmController fc;
     private Validator validator;
 
-    Errors processErrors(Film film) {
-        Errors errors = new BeanPropertyBindingResult(film, "film");
-        for (ConstraintViolation<Film> v : validator.validate(film)) {
-            errors.rejectValue(v.getPropertyPath().toString(), "invalid", v.getMessage());
-        }
-        return errors;
-    }
-
     @BeforeEach
     void setUp() {
         try (ValidatorFactory vf = Validation.buildDefaultValidatorFactory()) {
             validator = vf.getValidator();
         }
-        fc = new FilmController();
+
+        InMemoryFilmStorage filmStorage = new InMemoryFilmStorage();
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+
+        FilmService filmService = new FilmService(filmStorage, userStorage);
+
+        fc = new FilmController(filmService);
+
         Film film = Film.builder()
             .id(1L)
             .name("Test Film")
@@ -46,8 +44,7 @@ public class FilmControllerTest {
             .duration(11)
             .build();
 
-        Errors errors = new BeanPropertyBindingResult(film, "film");
-        fc.createFilm(film, errors);
+        fc.createFilm(film);
     }
 
     @Test
@@ -59,9 +56,8 @@ public class FilmControllerTest {
             .duration(11)
             .build();
 
-        Errors errors = new BeanPropertyBindingResult(newFilm, "film");
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
-        Film film = fc.createFilm(newFilm, errors);
+        Film film = fc.createFilm(newFilm);
 
         assertTrue(violations.isEmpty());
         assertNotNull(film.getId());
@@ -81,10 +77,10 @@ public class FilmControllerTest {
             .duration(11)
             .build();
 
-        Errors errors = processErrors(newFilm);
-        ValidationException exception = assertThrows(ValidationException.class, () -> fc.createFilm(newFilm, errors));
+        Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(Film.ERROR_FILM_NAME_EMPTY, exception.getMessage());
+        assertEquals(Film.ERROR_FILM_NAME_EMPTY, message);
         assertFalse(fc.getAllFilms().size() > 1);
     }
 
@@ -97,10 +93,10 @@ public class FilmControllerTest {
             .duration(11)
             .build();
 
-        Errors errors = processErrors(newFilm);
-        ValidationException exception = assertThrows(ValidationException.class, () -> fc.createFilm(newFilm, errors));
+        Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(Film.ERROR_FILM_NAME_EMPTY, exception.getMessage());
+        assertEquals(Film.ERROR_FILM_NAME_EMPTY, message);
         assertFalse(fc.getAllFilms().size() > 1);
     }
 
@@ -114,10 +110,10 @@ public class FilmControllerTest {
             .duration(11)
             .build();
 
-        Errors errors = processErrors(newFilm);
-        ValidationException exception = assertThrows(ValidationException.class, () -> fc.createFilm(newFilm, errors));
+        Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(Film.ERROR_FILM_DESCRIPTION_MAX_LENGTH, exception.getMessage());
+        assertEquals(Film.ERROR_FILM_DESCRIPTION_MAX_LENGTH, message);
         assertFalse(fc.getAllFilms().size() > 1);
     }
 
@@ -130,10 +126,10 @@ public class FilmControllerTest {
             .duration(11)
             .build();
 
-        Errors errors = processErrors(newFilm);
-        ValidationException exception = assertThrows(ValidationException.class, () -> fc.createFilm(newFilm, errors));
+        Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(FilmController.ERROR_MIN_FILM_RELEASE_DATE, exception.getMessage());
+        assertEquals(Film.ERROR_MIN_FILM_RELEASE_DATE, message);
         assertFalse(fc.getAllFilms().size() > 1);
     }
 
@@ -146,10 +142,10 @@ public class FilmControllerTest {
             .duration(0)
             .build();
 
-        Errors errors = processErrors(newFilm);
-        ValidationException exception = assertThrows(ValidationException.class, () -> fc.createFilm(newFilm, errors));
+        Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(Film.ERROR_FILM_DURATION_MIN, exception.getMessage());
+        assertEquals(Film.ERROR_FILM_DURATION_MIN, message);
         assertFalse(fc.getAllFilms().size() > 1);
     }
 
@@ -162,10 +158,10 @@ public class FilmControllerTest {
             .duration(-11)
             .build();
 
-        Errors errors = processErrors(newFilm);
-        ValidationException exception = assertThrows(ValidationException.class, () -> fc.createFilm(newFilm, errors));
+        Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(Film.ERROR_FILM_DURATION_MIN, exception.getMessage());
+        assertEquals(Film.ERROR_FILM_DURATION_MIN, message);
         assertFalse(fc.getAllFilms().size() > 1);
     }
 
@@ -178,10 +174,10 @@ public class FilmControllerTest {
             .duration(null)
             .build();
 
-        Errors errors = processErrors(newFilm);
-        ValidationException exception = assertThrows(ValidationException.class, () -> fc.createFilm(newFilm, errors));
+        Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(Film.ERROR_FILM_DURATION_MIN, exception.getMessage());
+        assertEquals(Film.ERROR_FILM_DURATION_MIN, message);
         assertFalse(fc.getAllFilms().size() > 1);
     }
 
@@ -195,9 +191,8 @@ public class FilmControllerTest {
             .duration(11)
             .build();
 
-        Errors errors = new BeanPropertyBindingResult(newFilm, "film");
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
-        Film film = fc.updateFilm(newFilm, errors);
+        Film film = fc.updateFilm(newFilm);
 
         assertNotNull(film);
         assertTrue(violations.isEmpty());
@@ -221,10 +216,9 @@ public class FilmControllerTest {
             .duration(11)
             .build();
 
-        Errors errors = processErrors(newFilm);
-        ValidationException exception = assertThrows(ValidationException.class, () -> fc.updateFilm(newFilm, errors));
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> fc.updateFilm(newFilm));
 
-        assertEquals(FilmController.ERROR_FILM_ID, exception.getMessage());
+        assertEquals(InMemoryFilmStorage.ERROR_FILM_ID, exception.getMessage());
         assertFalse(fc.getAllFilms().size() > 1);
     }
 
@@ -238,10 +232,10 @@ public class FilmControllerTest {
             .duration(11)
             .build();
 
-        Errors errors = processErrors(newFilm);
-        ValidationException exception = assertThrows(ValidationException.class, () -> fc.updateFilm(newFilm, errors));
+        Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(Film.ERROR_FILM_NAME_EMPTY, exception.getMessage());
+        assertEquals(Film.ERROR_FILM_NAME_EMPTY, message);
         assertFalse(fc.getAllFilms().size() > 1);
     }
 
@@ -256,10 +250,10 @@ public class FilmControllerTest {
             .duration(11)
             .build();
 
-        Errors errors = processErrors(newFilm);
-        ValidationException exception = assertThrows(ValidationException.class, () -> fc.updateFilm(newFilm, errors));
+        Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(Film.ERROR_FILM_DESCRIPTION_MAX_LENGTH, exception.getMessage());
+        assertEquals(Film.ERROR_FILM_DESCRIPTION_MAX_LENGTH, message);
         assertFalse(fc.getAllFilms().size() > 1);
     }
 
@@ -273,10 +267,10 @@ public class FilmControllerTest {
             .duration(11)
             .build();
 
-        Errors errors = processErrors(newFilm);
-        ValidationException exception = assertThrows(ValidationException.class, () -> fc.updateFilm(newFilm, errors));
+        Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(FilmController.ERROR_MIN_FILM_RELEASE_DATE, exception.getMessage());
+        assertEquals(Film.ERROR_MIN_FILM_RELEASE_DATE, message);
         assertFalse(fc.getAllFilms().size() > 1);
     }
 
@@ -290,10 +284,10 @@ public class FilmControllerTest {
             .duration(-11)
             .build();
 
-        Errors errors = processErrors(newFilm);
-        ValidationException exception = assertThrows(ValidationException.class, () -> fc.updateFilm(newFilm, errors));
+        Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(Film.ERROR_FILM_DURATION_MIN, exception.getMessage());
+        assertEquals(Film.ERROR_FILM_DURATION_MIN, message);
         assertFalse(fc.getAllFilms().size() > 1);
     }
 }

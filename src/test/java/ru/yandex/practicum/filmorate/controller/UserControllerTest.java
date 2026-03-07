@@ -6,10 +6,11 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.validation.BeanPropertyBindingResult;
-import org.springframework.validation.Errors;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -21,20 +22,18 @@ public class UserControllerTest {
     private UserController uc;
     private Validator validator;
 
-    Errors processErrors(User user) {
-        Errors errors = new BeanPropertyBindingResult(user, "user");
-        for (ConstraintViolation<User> v : validator.validate(user)) {
-            errors.rejectValue(v.getPropertyPath().toString(), "invalid", v.getMessage());
-        }
-        return errors;
-    }
-
     @BeforeEach
     void setUp() {
-        uc = new UserController();
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
             validator = factory.getValidator();
         }
+
+        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+
+        UserService userService = new UserService(userStorage);
+
+        uc = new UserController(userService);
+
         User user = User.builder()
             .id(1L)
             .email("test@yandex.ru")
@@ -43,8 +42,7 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = new BeanPropertyBindingResult(user, "user");
-        uc.createUser(user, errors);
+        uc.createUser(user);
     }
 
     @Test
@@ -56,9 +54,8 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = new BeanPropertyBindingResult(newUser, "user");
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
-        User user = uc.createUser(newUser, errors);
+        User user = uc.createUser(newUser);
 
         assertTrue(violations.isEmpty());
         assertNotNull(user);
@@ -78,10 +75,10 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.createUser(newUser, errors));
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(User.ERROR_USER_EMAIL, exception.getMessage());
+        assertEquals(User.ERROR_USER_EMAIL, message);
         assertFalse(uc.getAllUsers().size() > 1);
     }
 
@@ -94,10 +91,10 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.createUser(newUser, errors));
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(User.ERROR_USER_EMAIL, exception.getMessage());
+        assertEquals(User.ERROR_USER_EMAIL, message);
         assertFalse(uc.getAllUsers().size() > 1);
     }
 
@@ -110,10 +107,10 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.createUser(newUser, errors));
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(User.ERROR_USER_EMAIL, exception.getMessage());
+        assertEquals(User.ERROR_USER_EMAIL, message);
         assertFalse(uc.getAllUsers().size() > 1);
     }
 
@@ -126,10 +123,10 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.createUser(newUser, errors));
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(User.ERROR_USER_LOGIN, exception.getMessage());
+        assertEquals(User.ERROR_USER_LOGIN, message);
         assertFalse(uc.getAllUsers().size() > 1);
     }
 
@@ -142,10 +139,10 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.createUser(newUser, errors));
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(User.ERROR_USER_LOGIN, exception.getMessage());
+        assertEquals(User.ERROR_USER_LOGIN, message);
         assertFalse(uc.getAllUsers().size() > 1);
     }
 
@@ -158,10 +155,10 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.createUser(newUser, errors));
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(User.ERROR_USER_LOGIN, exception.getMessage());
+        assertEquals(User.ERROR_USER_LOGIN, message);
         assertFalse(uc.getAllUsers().size() > 1);
     }
 
@@ -174,9 +171,8 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = new BeanPropertyBindingResult(newUser, "user");
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
-        User user = uc.createUser(newUser, errors);
+        User user = uc.createUser(newUser);
 
         assertTrue(violations.isEmpty());
         assertNotNull(user);
@@ -197,9 +193,8 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = new BeanPropertyBindingResult(newUser, "user");
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
-        User user = uc.createUser(newUser, errors);
+        User user = uc.createUser(newUser);
 
         assertTrue(violations.isEmpty());
         assertNotNull(user);
@@ -220,10 +215,10 @@ public class UserControllerTest {
             .birthday(LocalDate.now())
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.createUser(newUser, errors));
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(User.ERROR_USER_BIRTHDAY, exception.getMessage());
+        assertEquals(User.ERROR_USER_BIRTHDAY, message);
         assertFalse(uc.getAllUsers().size() > 1);
     }
 
@@ -237,9 +232,8 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = new BeanPropertyBindingResult(newUser, "user");
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
-        User user = uc.updateUser(newUser, errors);
+        User user = uc.updateUser(newUser);
 
         assertTrue(violations.isEmpty());
         assertNotNull(user);
@@ -263,10 +257,9 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.updateUser(newUser, errors));
+        NotFoundException exception = assertThrows(NotFoundException.class, () -> uc.updateUser(newUser));
 
-        assertEquals(UserController.ERROR_USER_ID, exception.getMessage());
+        assertEquals(InMemoryUserStorage.ERROR_USER_ID, exception.getMessage());
         assertFalse(uc.getAllUsers().size() > 1);
     }
 
@@ -280,10 +273,10 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.updateUser(newUser, errors));
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(User.ERROR_USER_EMAIL, exception.getMessage());
+        assertEquals(User.ERROR_USER_EMAIL, message);
         assertFalse(uc.getAllUsers().size() > 1);
     }
 
@@ -297,10 +290,10 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.updateUser(newUser, errors));
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(User.ERROR_USER_EMAIL, exception.getMessage());
+        assertEquals(User.ERROR_USER_EMAIL, message);
         assertFalse(uc.getAllUsers().size() > 1);
     }
 
@@ -314,10 +307,10 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.updateUser(newUser, errors));
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(User.ERROR_USER_EMAIL, exception.getMessage());
+        assertEquals(User.ERROR_USER_EMAIL, message);
         assertFalse(uc.getAllUsers().size() > 1);
     }
 
@@ -331,10 +324,10 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.updateUser(newUser, errors));
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(User.ERROR_USER_LOGIN, exception.getMessage());
+        assertEquals(User.ERROR_USER_LOGIN, message);
         assertFalse(uc.getAllUsers().size() > 1);
     }
 
@@ -348,10 +341,10 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.updateUser(newUser, errors));
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(User.ERROR_USER_LOGIN, exception.getMessage());
+        assertEquals(User.ERROR_USER_LOGIN, message);
         assertFalse(uc.getAllUsers().size() > 1);
     }
 
@@ -365,10 +358,10 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.updateUser(newUser, errors));
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(User.ERROR_USER_LOGIN, exception.getMessage());
+        assertEquals(User.ERROR_USER_LOGIN, message);
         assertFalse(uc.getAllUsers().size() > 1);
     }
 
@@ -382,9 +375,8 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = new BeanPropertyBindingResult(newUser, "user");
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
-        User user = uc.updateUser(newUser, errors);
+        User user = uc.updateUser(newUser);
 
         assertNotNull(user);
         assertTrue(violations.isEmpty());
@@ -408,9 +400,8 @@ public class UserControllerTest {
             .birthday(LocalDate.of(2011, 11, 11))
             .build();
 
-        Errors errors = new BeanPropertyBindingResult(newUser, "user");
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
-        User user = uc.updateUser(newUser, errors);
+        User user = uc.updateUser(newUser);
 
         assertNotNull(user);
         assertTrue(violations.isEmpty());
@@ -434,10 +425,10 @@ public class UserControllerTest {
             .birthday(LocalDate.now())
             .build();
 
-        Errors errors = processErrors(newUser);
-        ValidationException exception = assertThrows(ValidationException.class, () -> uc.updateUser(newUser, errors));
+        Set<ConstraintViolation<User>> violations = validator.validate(newUser);
+        String message = violations.iterator().next().getMessage();
 
-        assertEquals(User.ERROR_USER_BIRTHDAY, exception.getMessage());
+        assertEquals(User.ERROR_USER_BIRTHDAY, message);
         assertFalse(uc.getAllUsers().size() > 1);
 
     }
