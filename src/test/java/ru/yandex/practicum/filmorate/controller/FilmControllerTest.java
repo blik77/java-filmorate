@@ -36,25 +36,23 @@ public class FilmControllerTest {
 
         fc = new FilmController(filmService);
 
-        Film film = Film.builder()
-            .id(1L)
-            .name("Test Film")
-            .description("Test Film Description")
-            .releaseDate(LocalDate.of(2025, 1, 1))
-            .duration(11)
-            .build();
+        Film film = new Film();
+        film.setId(1L);
+        film.setName("Test Film");
+        film.setDescription("Test Film Description");
+        film.setReleaseDate(LocalDate.of(2025, 1, 1));
+        film.setDuration(11);
 
         fc.createFilm(film);
     }
 
     @Test
     void createFilm_whenFilmValid_returnFilm() {
-        Film newFilm = Film.builder()
-            .name("film")
-            .description("Test Film Description")
-            .releaseDate(LocalDate.of(2025, 1, 1))
-            .duration(11)
-            .build();
+        Film newFilm = new Film();
+        newFilm.setName("film");
+        newFilm.setDescription("Test Film Description");
+        newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
+        newFilm.setDuration(11);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         Film film = fc.createFilm(newFilm);
@@ -70,12 +68,11 @@ public class FilmControllerTest {
 
     @Test
     void createFilm_whenFilmNameEmpty_returnError() {
-        Film newFilm = Film.builder()
-            .name("")
-            .description("Test Film Description")
-            .releaseDate(LocalDate.of(2025, 1, 1))
-            .duration(11)
-            .build();
+        Film newFilm = new Film();
+        newFilm.setName("");
+        newFilm.setDescription("Test Film Description");
+        newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
+        newFilm.setDuration(11);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -86,12 +83,11 @@ public class FilmControllerTest {
 
     @Test
     void createFilm_whenFilmNameNull_returnError() {
-        Film newFilm = Film.builder()
-            .name(null)
-            .description("Test Film Description")
-            .releaseDate(LocalDate.of(2025, 1, 1))
-            .duration(11)
-            .build();
+        Film newFilm = new Film();
+        newFilm.setName(null);
+        newFilm.setDescription("Test Film Description");
+        newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
+        newFilm.setDuration(11);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -103,12 +99,11 @@ public class FilmControllerTest {
     @Test
     void createFilm_whenFilmDescriptionLong_returnError() {
         String description = "Test Film Description".repeat(11);
-        Film newFilm = Film.builder()
-            .name("Test Film 2")
-            .description(description)
-            .releaseDate(LocalDate.of(2025, 1, 1))
-            .duration(11)
-            .build();
+        Film newFilm = new Film();
+        newFilm.setName("film");
+        newFilm.setDescription(description);
+        newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
+        newFilm.setDuration(11);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -119,12 +114,11 @@ public class FilmControllerTest {
 
     @Test
     void createFilm_whenFilmReleaseDateBefore_returnError() {
-        Film newFilm = Film.builder()
-            .name("Test Film 2")
-            .description("Test Film Description 2")
-            .releaseDate(LocalDate.of(1111, 1, 1))
-            .duration(11)
-            .build();
+        Film newFilm = new Film();
+        newFilm.setName("film");
+        newFilm.setDescription("Test Film Description");
+        newFilm.setReleaseDate(LocalDate.of(1111, 1, 1));
+        newFilm.setDuration(11);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -135,12 +129,11 @@ public class FilmControllerTest {
 
     @Test
     void createFilm_whenFilmDurationZero_returnError() {
-        Film newFilm = Film.builder()
-            .name("Test Film 2")
-            .description("Test Film Description 2")
-            .releaseDate(LocalDate.of(2025, 1, 1))
-            .duration(0)
-            .build();
+        Film newFilm = new Film();
+        newFilm.setName("film");
+        newFilm.setDescription("Test Film Description");
+        newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
+        newFilm.setDuration(0);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -151,12 +144,11 @@ public class FilmControllerTest {
 
     @Test
     void createFilm_whenFilmDurationNegative_returnError() {
-        Film newFilm = Film.builder()
-            .name("Test Film 2")
-            .description("Test Film Description 2")
-            .releaseDate(LocalDate.of(2025, 1, 1))
-            .duration(-11)
-            .build();
+        Film newFilm = new Film();
+        newFilm.setName("film");
+        newFilm.setDescription("Test Film Description");
+        newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
+        newFilm.setDuration(-11);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -167,12 +159,11 @@ public class FilmControllerTest {
 
     @Test
     void createFilm_whenFilmDurationNull_returnError() {
-        Film newFilm = Film.builder()
-            .name("Test Film 2")
-            .description("Test Film Description 2")
-            .releaseDate(LocalDate.of(2025, 1, 1))
-            .duration(null)
-            .build();
+        Film newFilm = new Film();
+        newFilm.setName("film");
+        newFilm.setDescription("Test Film Description");
+        newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
+        newFilm.setDuration(null);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -183,13 +174,12 @@ public class FilmControllerTest {
 
     @Test
     void updateFilm_whenFilmValid_returnFilm() {
-        Film newFilm = Film.builder()
-            .id(1L)
-            .name("Test Film 2")
-            .description("Test Film Description 2")
-            .releaseDate(LocalDate.of(2025, 1, 1))
-            .duration(11)
-            .build();
+        Film newFilm = new Film();
+        newFilm.setId(1L);
+        newFilm.setName("film");
+        newFilm.setDescription("Test Film Description");
+        newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
+        newFilm.setDuration(11);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         Film film = fc.updateFilm(newFilm);
@@ -208,13 +198,12 @@ public class FilmControllerTest {
 
     @Test
     void updateFilm_whenFilmIdWrong_returnError() {
-        Film newFilm = Film.builder()
-            .id(2L)
-            .name("Test Film 2")
-            .description("Test Film Description 2")
-            .releaseDate(LocalDate.of(2025, 1, 1))
-            .duration(11)
-            .build();
+        Film newFilm = new Film();
+        newFilm.setId(2L);
+        newFilm.setName("film");
+        newFilm.setDescription("Test Film Description");
+        newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
+        newFilm.setDuration(11);
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> fc.updateFilm(newFilm));
 
@@ -224,13 +213,12 @@ public class FilmControllerTest {
 
     @Test
     void updateFilm_whenFilmNameEmpty_returnError() {
-        Film newFilm = Film.builder()
-            .id(1L)
-            .name("")
-            .description("Test Film Description 2")
-            .releaseDate(LocalDate.of(2025, 1, 1))
-            .duration(11)
-            .build();
+        Film newFilm = new Film();
+        newFilm.setId(1L);
+        newFilm.setName("");
+        newFilm.setDescription("Test Film Description");
+        newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
+        newFilm.setDuration(11);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -242,13 +230,12 @@ public class FilmControllerTest {
     @Test
     void updateFilm_whenFilmDescriptionLong_returnError() {
         String description = "Test Film Description 2".repeat(11);
-        Film newFilm = Film.builder()
-            .id(1L)
-            .name("Test Film 2")
-            .description(description)
-            .releaseDate(LocalDate.of(2025, 1, 1))
-            .duration(11)
-            .build();
+        Film newFilm = new Film();
+        newFilm.setId(1L);
+        newFilm.setName("film");
+        newFilm.setDescription(description);
+        newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
+        newFilm.setDuration(11);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -259,13 +246,12 @@ public class FilmControllerTest {
 
     @Test
     void updateFilm_whenFilmReleaseDateBefore_returnError() {
-        Film newFilm = Film.builder()
-            .id(1L)
-            .name("Test Film 2")
-            .description("Test Film Description 2")
-            .releaseDate(LocalDate.of(1111, 1, 1))
-            .duration(11)
-            .build();
+        Film newFilm = new Film();
+        newFilm.setId(1L);
+        newFilm.setName("film");
+        newFilm.setDescription("Test Film Description");
+        newFilm.setReleaseDate(LocalDate.of(1111, 1, 1));
+        newFilm.setDuration(11);
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -276,13 +262,13 @@ public class FilmControllerTest {
 
     @Test
     void updateFilm_whenFilmDurationNegative_returnError() {
-        Film newFilm = Film.builder()
-            .id(1L)
-            .name("Test Film 2")
-            .description("Test Film Description 2")
-            .releaseDate(LocalDate.of(2025, 1, 1))
-            .duration(-11)
-            .build();
+        Film newFilm = new Film();
+        newFilm.setId(1L);
+        newFilm.setName("film");
+        newFilm.setDescription("Test Film Description");
+        newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
+        newFilm.setDuration(-11);
+
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();

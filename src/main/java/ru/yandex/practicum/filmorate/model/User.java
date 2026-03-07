@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Builder
 @EqualsAndHashCode(of = { "id" })
 public class User {
     public static final String ERROR_USER_EMAIL = "Электронная почта не может быть пустой и должна содержать символ @";

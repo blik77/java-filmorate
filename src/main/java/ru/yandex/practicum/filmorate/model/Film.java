@@ -8,7 +8,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@Builder
 @EqualsAndHashCode(of = { "id" })
 public class Film {
     public static final String ERROR_FILM_NAME_EMPTY = "Название не может быть пустым";

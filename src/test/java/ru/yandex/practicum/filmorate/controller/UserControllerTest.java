@@ -34,25 +34,22 @@ public class UserControllerTest {
 
         uc = new UserController(userService);
 
-        User user = User.builder()
-            .id(1L)
-            .email("test@yandex.ru")
-            .login("testLogin")
-            .name("testName")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
-
+        User user = new User();
+        user.setId(1L);
+        user.setEmail("test@yandex.ru");
+        user.setLogin("testLogin");
+        user.setName("testName");
+        user.setBirthday(LocalDate.of(2011, 11, 11));
         uc.createUser(user);
     }
 
     @Test
     void createUser_whenUserValid_returnUser() {
-        User newUser = User.builder()
-            .email("test2@yandex.ru")
-            .login("testLogin2")
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin("testLogin2");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         User user = uc.createUser(newUser);
@@ -68,12 +65,11 @@ public class UserControllerTest {
 
     @Test
     void createUser_whenUserEmailEmpty_returnError() {
-        User newUser = User.builder()
-            .email("")
-            .login("testLogin2")
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setEmail("");
+        newUser.setLogin("testLogin2");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         String message = violations.iterator().next().getMessage();
@@ -84,12 +80,11 @@ public class UserControllerTest {
 
     @Test
     void createUser_whenUserEmailWrong_returnError() {
-        User newUser = User.builder()
-            .email("testemail")
-            .login("testLogin2")
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setEmail("test2yandex.ru");
+        newUser.setLogin("testLogin2");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         String message = violations.iterator().next().getMessage();
@@ -100,12 +95,11 @@ public class UserControllerTest {
 
     @Test
     void createUser_whenUserEmailNull_returnError() {
-        User newUser = User.builder()
-            .email(null)
-            .login("testLogin2")
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setEmail(null);
+        newUser.setLogin("testLogin2");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         String message = violations.iterator().next().getMessage();
@@ -116,12 +110,11 @@ public class UserControllerTest {
 
     @Test
     void createUser_whenUserLoginEmpty_returnError() {
-        User newUser = User.builder()
-            .email("test2@yandex.ru")
-            .login("")
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin("");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         String message = violations.iterator().next().getMessage();
@@ -132,12 +125,11 @@ public class UserControllerTest {
 
     @Test
     void createUser_whenUserLoginNull_returnError() {
-        User newUser = User.builder()
-            .email("test2@yandex.ru")
-            .login(null)
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin(null);
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         String message = violations.iterator().next().getMessage();
@@ -148,12 +140,11 @@ public class UserControllerTest {
 
     @Test
     void createUser_whenUserLoginSpace_returnError() {
-        User newUser = User.builder()
-            .email("test2@yandex.ru")
-            .login("test Login2")
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin("test Login2");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         String message = violations.iterator().next().getMessage();
@@ -164,12 +155,11 @@ public class UserControllerTest {
 
     @Test
     void createUser_whenUserNameEmpty_returnUser() {
-        User newUser = User.builder()
-            .email("test2@yandex.ru")
-            .login("testLogin2")
-            .name("")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin("testLogin2");
+        newUser.setName("");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         User user = uc.createUser(newUser);
@@ -186,12 +176,11 @@ public class UserControllerTest {
 
     @Test
     void createUser_whenUserNameNull_returnUser() {
-        User newUser = User.builder()
-            .email("test2@yandex.ru")
-            .login("testLogin2")
-            .name(null)
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin("testLogin2");
+        newUser.setName(null);
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         User user = uc.createUser(newUser);
@@ -208,12 +197,11 @@ public class UserControllerTest {
 
     @Test
     void createUser_whenUserBirthdayNotPast_returnError() {
-        User newUser = User.builder()
-            .email("test2@yandex.ru")
-            .login("testLogin2")
-            .name("testName2")
-            .birthday(LocalDate.now())
-            .build();
+        User newUser = new User();
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin("testLogin2");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.now());
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         String message = violations.iterator().next().getMessage();
@@ -224,13 +212,12 @@ public class UserControllerTest {
 
     @Test
     void updateUser_whenUserValid_returnUser() {
-        User newUser = User.builder()
-            .id(1L)
-            .email("test2@yandex.ru")
-            .login("testLogin2")
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setId(1L);
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin("testLogin2");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         User user = uc.updateUser(newUser);
@@ -249,13 +236,12 @@ public class UserControllerTest {
 
     @Test
     void updateUser_whenUserIdWrong_returnError() {
-        User newUser = User.builder()
-            .id(2L)
-            .email("test2@yandex.ru")
-            .login("testLogin2")
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setId(2L);
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin("testLogin2");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> uc.updateUser(newUser));
 
@@ -265,13 +251,12 @@ public class UserControllerTest {
 
     @Test
     void updateUser_whenUserEmailEmpty_returnError() {
-        User newUser = User.builder()
-            .id(1L)
-            .email("")
-            .login("testLogin2")
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setId(1L);
+        newUser.setEmail("");
+        newUser.setLogin("testLogin2");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         String message = violations.iterator().next().getMessage();
@@ -282,13 +267,12 @@ public class UserControllerTest {
 
     @Test
     void updateUser_whenUserEmailWrong_returnError() {
-        User newUser = User.builder()
-            .id(1L)
-            .email("testemail")
-            .login("testLogin2")
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setId(1L);
+        newUser.setEmail("test2yandex.ru");
+        newUser.setLogin("testLogin2");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         String message = violations.iterator().next().getMessage();
@@ -299,13 +283,12 @@ public class UserControllerTest {
 
     @Test
     void updateUser_whenUserEmailNull_returnError() {
-        User newUser = User.builder()
-            .id(1L)
-            .email(null)
-            .login("testLogin2")
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setId(1L);
+        newUser.setEmail(null);
+        newUser.setLogin("testLogin2");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         String message = violations.iterator().next().getMessage();
@@ -316,13 +299,12 @@ public class UserControllerTest {
 
     @Test
     void updateUser_whenUserLoginEmpty_returnError() {
-        User newUser = User.builder()
-            .id(1L)
-            .email("test2@yandex.ru")
-            .login("")
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setId(1L);
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin("");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         String message = violations.iterator().next().getMessage();
@@ -333,13 +315,12 @@ public class UserControllerTest {
 
     @Test
     void updateUser_whenUserLoginNull_returnError() {
-        User newUser = User.builder()
-            .id(1L)
-            .email("test2@yandex.ru")
-            .login(null)
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setId(1L);
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin(null);
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         String message = violations.iterator().next().getMessage();
@@ -350,13 +331,12 @@ public class UserControllerTest {
 
     @Test
     void updateUser_whenUserLoginSpace_returnError() {
-        User newUser = User.builder()
-            .id(1L)
-            .email("test2@yandex.ru")
-            .login("test Login2")
-            .name("testName2")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setId(1L);
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin("test Login2");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         String message = violations.iterator().next().getMessage();
@@ -367,13 +347,12 @@ public class UserControllerTest {
 
     @Test
     void updateUser_whenUserNameEmpty_returnUser() {
-        User newUser = User.builder()
-            .id(1L)
-            .email("test2@yandex.ru")
-            .login("testLogin2")
-            .name("")
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setId(1L);
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin("testLogin2");
+        newUser.setName("");
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         User user = uc.updateUser(newUser);
@@ -392,13 +371,12 @@ public class UserControllerTest {
 
     @Test
     void updateUser_whenUserNameNull_returnUser() {
-        User newUser = User.builder()
-            .id(1L)
-            .email("test2@yandex.ru")
-            .login("testLogin2")
-            .name(null)
-            .birthday(LocalDate.of(2011, 11, 11))
-            .build();
+        User newUser = new User();
+        newUser.setId(1L);
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin("testLogin2");
+        newUser.setName(null);
+        newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         User user = uc.updateUser(newUser);
@@ -417,13 +395,12 @@ public class UserControllerTest {
 
     @Test
     void updateUser_whenUserBirthdayNotPast_returnError() {
-        User newUser = User.builder()
-            .id(1L)
-            .email("test2@yandex.ru")
-            .login("testLogin2")
-            .name("testName2")
-            .birthday(LocalDate.now())
-            .build();
+        User newUser = new User();
+        newUser.setId(1L);
+        newUser.setEmail("test2@yandex.ru");
+        newUser.setLogin("testLogin2");
+        newUser.setName("testName2");
+        newUser.setBirthday(LocalDate.now());
 
         Set<ConstraintViolation<User>> violations = validator.validate(newUser);
         String message = violations.iterator().next().getMessage();
