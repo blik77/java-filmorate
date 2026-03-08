@@ -14,6 +14,9 @@ public class UserService {
     private final UserStorage userStorage;
 
     public User createUser(User user) {
+        if (user.getName() == null || user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
         return userStorage.createUser(user);
     }
 
@@ -22,6 +25,9 @@ public class UserService {
     }
 
     public User updateUser(User user) {
+        if (user.getName() == null || user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
         return userStorage.updateUser(user);
     }
 
