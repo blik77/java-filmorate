@@ -7,11 +7,10 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(of = { "id" })
 public class User {
     public static final String ERROR_USER_EMAIL = "Электронная почта не может быть пустой и должна содержать символ @";
@@ -32,4 +31,6 @@ public class User {
 
     @Past(message = ERROR_USER_BIRTHDAY)
     private LocalDate birthday;
+
+    private Set<Long> friends = new HashSet<>();
 }

@@ -1,70 +1,61 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
-import static ru.yandex.practicum.filmorate.util.ModelUtil.checkError;
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
-    private static final LocalDate MIN_FILM_RELEASE_DATE = LocalDate.of(1895, 12, 28);
-    public static final String ERROR_MIN_FILM_RELEASE_DATE =
-        "Дата релиза — не раньше " + MIN_FILM_RELEASE_DATE.format(DateTimeFormatter.ofPattern("dd MMMM yyyy")) + " года";
-    public static final String ERROR_FILM_ID = "Фильм не найден";
-
-    private final Map<Long, Film> films = new HashMap<>();
-
-    private long newFilmId = 1;
-
-    @GetMapping
-    public Collection<Film> getAllFilms() {
-        log.info("getAllFilms: {}", films.size());
-        return films.values();
-    }
+    private final FilmService filmService;
 
     @PostMapping
-    public Film createFilm(@Valid @RequestBody Film film, Errors errors) {
-        checkData(film, errors);
-
-        film.setId(newFilmId++);
-
-        films.put(film.getId(), film);
+    public Film createFilm(@Valid @RequestBody Film film) {
         log.info("createFilm: {}", film);
-        return film;
+        return filmService.createFilm(film);
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilmById(@PathVariable Long id) {
+        log.info("getFilmById: {}", id);
+        return filmService.getFilmById(id);
     }
 
     @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film film, Errors errors) {
-        if (film.getId() == null || !films.containsKey(film.getId())) {
-            log.error(ERROR_FILM_ID);
-            throw new ValidationException(ERROR_FILM_ID);
-        }
-
-        checkData(film, errors);
-
-        films.put(film.getId(), film);
+    public Film updateFilm(@Valid @RequestBody Film film) {
         log.info("updateFilm: {}", film);
-        return film;
+        return filmService.updateFilm(film);
     }
 
-    private void checkData(Film film, Errors errors) {
-        checkError(errors);
+    @GetMapping
+    public Collection<Film> getAllFilms() {
+        log.info("getAllFilms: {}", filmService.getAllFilms().size());
+        return filmService.getAllFilms();
+    }
 
-        if (film.getReleaseDate() != null && film.getReleaseDate().isBefore(MIN_FILM_RELEASE_DATE)) {
-            log.error(ERROR_MIN_FILM_RELEASE_DATE);
-            throw new ValidationException(ERROR_MIN_FILM_RELEASE_DATE);
-        }
+    @PutMapping("/{id}/like/{userId}")
+    public void addFilmLike(@PathVariable Long id, @PathVariable Long userId) {
+        log.info("addFilmLike: {}", id + " для " + userId);
+        filmService.addFilmLike(id, userId);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeFilmLike(@PathVariable Long id, @PathVariable Long userId) {
+        log.info("removeFilmLike: {}", id + " для " + userId);
+        filmService.removeFilmLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> getPopularFilms(@RequestParam(defaultValue = "10") int count) {
+        log.info("getPopularFilms: {}", count);
+        return filmService.getPopularFilms(count);
     }
 }
