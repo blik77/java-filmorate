@@ -64,7 +64,7 @@ SELECT f.id, f.name
 FROM films AS f
 JOIN film_genres AS fg ON f.film_id = fg.film_id
 JOIN genres g ON fg.genre_id = g.genre_id
-WHERE g.name = ''  /*подставить нужное название жанра*/
+WHERE g.name = 'PG'  /*подставить нужное название жанра*/
 ```
 
 #### Получить все жанры
@@ -82,5 +82,5 @@ SELECT code, description FROM mpa_ratings
 SELECT f.name
 FROM films AS f
 JOIN likes AS l ON f.film_id = l.film_id
-WHERE l.user_id = 3 /*подставить нужный user_id*/
+WHERE l.user_id = 0 /*подставить нужный user_id*/
 ```
