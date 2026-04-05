@@ -1,53 +1,70 @@
 package ru.yandex.practicum.filmorate.service;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.Collection;
-import java.util.Set;
+import java.util.*;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
 
-    public User createUser(User user) {
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
-        return userStorage.createUser(user);
+    public UserService(UserStorage userStorage) {
+        this.userStorage = userStorage;
     }
 
-    public User getUserById(Long id) {
-        return userStorage.getUserById(id);
+    public void addUserFriend(final Long userId, final Long friendId) {
+        userStorage.getUserById(userId);
+        userStorage.getUserById(friendId);
+        userStorage.addUserFriend(userId, friendId);
     }
 
-    public User updateUser(User user) {
-        if (user.getName() == null || user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
-        return userStorage.updateUser(user);
+    public void removeUserFriend(Long userId, Long friendId) {
+        userStorage.getUserById(userId);
+        userStorage.getUserById(friendId);
+
+        userStorage.removeUserFriend(userId, friendId);
+    }
+
+    public List<User> getUserFriends(Long userId) {
+        userStorage.getUserById(userId);
+        return userStorage.getUserFriends(userId);
+    }
+
+    public List<User> getCommonUserFriends(Long userId, Long otherId) {
+        userStorage.getUserById(userId);
+        userStorage.getUserById(otherId);
+
+        return userStorage.getCommonUserFriends(userId, otherId);
     }
 
     public Collection<User> getAllUsers() {
         return userStorage.getAllUsers();
     }
 
-    public void addUserFriend(Long id, Long friendId) {
-        userStorage.addUserFriend(id, friendId);
+    public User createUser(final User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+
+        return userStorage.createUser(user);
     }
 
-    public void removeUserFriend(Long id, Long friendId) {
-        userStorage.removeUserFriend(id, friendId);
+    public User updateUser(final User user) {
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        boolean updated = userStorage.updateUser(user);
+        if (!updated) {
+            throw new NoSuchElementException("Пользователь не найден");
+        }
+
+        return user;
     }
 
-    public Set<User> getUserFriends(Long id) {
-        return userStorage.getUserFriends(id);
+    public User getUserById(final Long id) {
+        return userStorage.getUserById(id);
     }
 
-    public Set<User> getCommonUserFriends(Long id, Long otherId) {
-        return userStorage.getCommonUserFriends(id, otherId);
-    }
 }

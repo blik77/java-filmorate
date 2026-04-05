@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.DbUserStorage;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -28,7 +28,7 @@ public class UserControllerTest {
             validator = factory.getValidator();
         }
 
-        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        DbUserStorage userStorage = new DbUserStorage();
 
         UserService userService = new UserService(userStorage);
 

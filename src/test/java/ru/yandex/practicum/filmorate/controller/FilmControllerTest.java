@@ -10,8 +10,10 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.film.DbFilmStorage;
+import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.user.DbUserStorage;
 
 import java.time.LocalDate;
 import java.util.Set;
@@ -29,10 +31,12 @@ public class FilmControllerTest {
             validator = vf.getValidator();
         }
 
-        InMemoryFilmStorage filmStorage = new InMemoryFilmStorage();
-        InMemoryUserStorage userStorage = new InMemoryUserStorage();
+        DbFilmStorage filmStorage = new DbFilmStorage();
+        DbUserStorage userStorage = new DbUserStorage();
+        GenreStorage genreStorage = new GenreStorage();
+        MpaStorage mpaStorage = new MpaStorage();
 
-        FilmService filmService = new FilmService(filmStorage, userStorage);
+        FilmService filmService = new FilmService(filmStorage, userStorage, genreStorage, mpaStorage);
 
         fc = new FilmController(filmService);
 
