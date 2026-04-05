@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.genre.DbGenreStorage;
 import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
@@ -19,6 +20,7 @@ public class FilmService {
     private final MpaStorage mpaStorage;
 
     private static final LocalDate FIRST_FILM_DATE = LocalDate.of(1895, 12, 28);
+    private static final String MPA_MUST_HAVE = "MPA должен быть указан";
 
     public FilmService(FilmStorage filmStorage,
                        UserStorage userStorage,
@@ -57,7 +59,7 @@ public class FilmService {
         if (film.getMpa() != null) {
             film.setMpa(mpaStorage.findById(film.getMpa().getId()));
         } else {
-            throw new IllegalArgumentException("MPA должен быть указан");
+            throw new IllegalArgumentException(MPA_MUST_HAVE);
         }
 
         if (film.getGenres() != null && !film.getGenres().isEmpty()) {
@@ -71,11 +73,11 @@ public class FilmService {
             try {
                 genresFromDb = genreStorage.findAllByIds(ids);
             } catch (Exception e) {
-                throw new NoSuchElementException("Жанр не найден");
+                throw new NoSuchElementException(DbGenreStorage.GENRE_NOT_FOUND);
             }
 
             if (genresFromDb.size() != ids.size()) {
-                throw new NoSuchElementException("Жанр не найден");
+                throw new NoSuchElementException(DbGenreStorage.GENRE_NOT_FOUND);
             }
 
             film.setGenres(new LinkedHashSet<>(genresFromDb));

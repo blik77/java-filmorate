@@ -11,6 +11,7 @@ import java.util.NoSuchElementException;
 
 @Component
 public class DbGenreStorage implements GenreStorage {
+    public static final String GENRE_NOT_FOUND = "Жанр не найден";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -29,7 +30,7 @@ public class DbGenreStorage implements GenreStorage {
                         new GenreRowMapper(), id)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Жанр не найден"));
+                .orElseThrow(() -> new NoSuchElementException(GENRE_NOT_FOUND));
     }
 
     @Override

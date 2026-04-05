@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 
 @Component
 public class DbMpaStorage implements MpaStorage {
+    public static final String MPA_NOT_FOUND = "MPA не найден";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -29,6 +30,6 @@ public class DbMpaStorage implements MpaStorage {
                         new MpaRowMapper(), id)
                 .stream()
                 .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("MPA не найден"));
+                .orElseThrow(() -> new NoSuchElementException(MPA_NOT_FOUND));
     }
 }

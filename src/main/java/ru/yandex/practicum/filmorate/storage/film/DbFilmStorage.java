@@ -12,6 +12,7 @@ import java.util.*;
 
 @Component
 public class DbFilmStorage implements FilmStorage {
+    public static final String FILM_NOT_FOUND = "Фильм не найден";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -42,9 +43,9 @@ public class DbFilmStorage implements FilmStorage {
         """;
 
         Film film = jdbcTemplate.query(sql, new FilmRowMapper(), id)
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new NoSuchElementException("Фильм не найден"));
+            .stream()
+            .findFirst()
+            .orElseThrow(() -> new NoSuchElementException(DbFilmStorage.FILM_NOT_FOUND));
 
         loadGenres(film);
 
@@ -83,16 +84,16 @@ public class DbFilmStorage implements FilmStorage {
         """;
 
         int updated = jdbcTemplate.update(sql,
-                film.getName(),
-                film.getDescription(),
-                film.getReleaseDate(),
-                film.getDuration(),
-                film.getMpa().getId(),
-                film.getId()
+            film.getName(),
+            film.getDescription(),
+            film.getReleaseDate(),
+            film.getDuration(),
+            film.getMpa().getId(),
+            film.getId()
         );
 
         if (updated == 0) {
-            throw new NotFoundException("Фильм не найден");
+            throw new NotFoundException(FILM_NOT_FOUND);
         }
 
         jdbcTemplate.update("DELETE FROM film_genres WHERE film_id=?", film.getId());
