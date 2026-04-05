@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreRowMapper;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -91,7 +92,7 @@ public class DbFilmStorage implements FilmStorage {
         );
 
         if (updated == 0) {
-            throw new NoSuchElementException("Фильм не найден");
+            throw new NotFoundException("Фильм не найден");
         }
 
         jdbcTemplate.update("DELETE FROM film_genres WHERE film_id=?", film.getId());

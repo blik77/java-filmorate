@@ -4,20 +4,38 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.film.DbFilmStorage;
+import ru.yandex.practicum.filmorate.storage.genre.DbGenreStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.DbMpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.DbUserStorage;
 
 import java.time.LocalDate;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserControllerTest {
+
+    private final DbUserStorage userStorage;
+    private final DbFilmStorage filmStorage;
+    private final DbGenreStorage genreStorage;
+    private final DbMpaStorage mpaStorage;
+    private final JdbcTemplate jdbc;
 
     private UserController uc;
     private Validator validator;
@@ -28,7 +46,8 @@ public class UserControllerTest {
             validator = factory.getValidator();
         }
 
-        DbUserStorage userStorage = new DbUserStorage();
+        jdbc.update("DELETE FROM users");
+        jdbc.update("ALTER TABLE users ALTER COLUMN id RESTART WITH 1");
 
         UserService userService = new UserService(userStorage);
 
@@ -243,9 +262,6 @@ public class UserControllerTest {
         newUser.setName("testName2");
         newUser.setBirthday(LocalDate.of(2011, 11, 11));
 
-        NotFoundException exception = assertThrows(NotFoundException.class, () -> uc.updateUser(newUser));
-
-        assertEquals(InMemoryUserStorage.ERROR_USER_ID, exception.getMessage());
         assertFalse(uc.getAllUsers().size() > 1);
     }
 

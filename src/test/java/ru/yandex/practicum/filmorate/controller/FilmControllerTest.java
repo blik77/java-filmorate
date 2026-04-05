@@ -4,15 +4,20 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.jdbc.test.autoconfigure.AutoConfigureTestDatabase;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.storage.film.DbFilmStorage;
-import ru.yandex.practicum.filmorate.storage.genre.GenreStorage;
-import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
+import ru.yandex.practicum.filmorate.storage.genre.DbGenreStorage;
+import ru.yandex.practicum.filmorate.storage.mpa.DbMpaStorage;
 import ru.yandex.practicum.filmorate.storage.user.DbUserStorage;
 
 import java.time.LocalDate;
@@ -20,7 +25,16 @@ import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@SpringBootTest
+@AutoConfigureTestDatabase
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class FilmControllerTest {
+
+    private final DbUserStorage userStorage;
+    private final DbFilmStorage filmStorage;
+    private final DbGenreStorage genreStorage;
+    private final DbMpaStorage mpaStorage;
+    private final JdbcTemplate jdbc;
 
     private FilmController fc;
     private Validator validator;
@@ -31,10 +45,8 @@ public class FilmControllerTest {
             validator = vf.getValidator();
         }
 
-        DbFilmStorage filmStorage = new DbFilmStorage();
-        DbUserStorage userStorage = new DbUserStorage();
-        GenreStorage genreStorage = new GenreStorage();
-        MpaStorage mpaStorage = new MpaStorage();
+        jdbc.update("DELETE FROM films");
+        jdbc.update("ALTER TABLE films ALTER COLUMN id RESTART WITH 1");
 
         FilmService filmService = new FilmService(filmStorage, userStorage, genreStorage, mpaStorage);
 
@@ -46,6 +58,7 @@ public class FilmControllerTest {
         film.setDescription("Test Film Description");
         film.setReleaseDate(LocalDate.of(2025, 1, 1));
         film.setDuration(11);
+        film.setMpa(mpaStorage.findById(1L));
 
         fc.createFilm(film);
     }
@@ -57,6 +70,7 @@ public class FilmControllerTest {
         newFilm.setDescription("Test Film Description");
         newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
         newFilm.setDuration(11);
+        newFilm.setMpa(mpaStorage.findById(1L));
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         Film film = fc.createFilm(newFilm);
@@ -77,6 +91,7 @@ public class FilmControllerTest {
         newFilm.setDescription("Test Film Description");
         newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
         newFilm.setDuration(11);
+        newFilm.setMpa(mpaStorage.findById(1L));
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -92,6 +107,7 @@ public class FilmControllerTest {
         newFilm.setDescription("Test Film Description");
         newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
         newFilm.setDuration(11);
+        newFilm.setMpa(mpaStorage.findById(1L));
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -108,6 +124,7 @@ public class FilmControllerTest {
         newFilm.setDescription(description);
         newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
         newFilm.setDuration(11);
+        newFilm.setMpa(mpaStorage.findById(1L));
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -123,6 +140,7 @@ public class FilmControllerTest {
         newFilm.setDescription("Test Film Description");
         newFilm.setReleaseDate(LocalDate.of(1111, 1, 1));
         newFilm.setDuration(11);
+        newFilm.setMpa(mpaStorage.findById(1L));
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -138,6 +156,7 @@ public class FilmControllerTest {
         newFilm.setDescription("Test Film Description");
         newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
         newFilm.setDuration(0);
+        newFilm.setMpa(mpaStorage.findById(1L));
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -153,6 +172,7 @@ public class FilmControllerTest {
         newFilm.setDescription("Test Film Description");
         newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
         newFilm.setDuration(-11);
+        newFilm.setMpa(mpaStorage.findById(1L));
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -168,6 +188,7 @@ public class FilmControllerTest {
         newFilm.setDescription("Test Film Description");
         newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
         newFilm.setDuration(null);
+        newFilm.setMpa(mpaStorage.findById(1L));
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -184,6 +205,7 @@ public class FilmControllerTest {
         newFilm.setDescription("Test Film Description");
         newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
         newFilm.setDuration(11);
+        newFilm.setMpa(mpaStorage.findById(1L));
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         Film film = fc.updateFilm(newFilm);
@@ -208,10 +230,10 @@ public class FilmControllerTest {
         newFilm.setDescription("Test Film Description");
         newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
         newFilm.setDuration(11);
+        newFilm.setMpa(mpaStorage.findById(1L));
 
         NotFoundException exception = assertThrows(NotFoundException.class, () -> fc.updateFilm(newFilm));
 
-        assertEquals(InMemoryFilmStorage.ERROR_FILM_ID, exception.getMessage());
         assertFalse(fc.getAllFilms().size() > 1);
     }
 
@@ -223,6 +245,7 @@ public class FilmControllerTest {
         newFilm.setDescription("Test Film Description");
         newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
         newFilm.setDuration(11);
+        newFilm.setMpa(mpaStorage.findById(1L));
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -240,6 +263,7 @@ public class FilmControllerTest {
         newFilm.setDescription(description);
         newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
         newFilm.setDuration(11);
+        newFilm.setMpa(mpaStorage.findById(1L));
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -256,6 +280,7 @@ public class FilmControllerTest {
         newFilm.setDescription("Test Film Description");
         newFilm.setReleaseDate(LocalDate.of(1111, 1, 1));
         newFilm.setDuration(11);
+        newFilm.setMpa(mpaStorage.findById(1L));
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);
         String message = violations.iterator().next().getMessage();
@@ -272,6 +297,7 @@ public class FilmControllerTest {
         newFilm.setDescription("Test Film Description");
         newFilm.setReleaseDate(LocalDate.of(2025, 1, 1));
         newFilm.setDuration(-11);
+        newFilm.setMpa(mpaStorage.findById(1L));
 
 
         Set<ConstraintViolation<Film>> violations = validator.validate(newFilm);

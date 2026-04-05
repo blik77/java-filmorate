@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.DbUserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
@@ -57,7 +58,7 @@ public class UserService {
         }
         boolean updated = userStorage.updateUser(user);
         if (!updated) {
-            throw new NoSuchElementException("Пользователь не найден");
+            throw new NoSuchElementException(DbUserStorage.USER_NOT_FOUND);
         }
 
         return user;

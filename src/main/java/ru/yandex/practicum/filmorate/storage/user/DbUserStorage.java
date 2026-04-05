@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserRowMapper;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -11,10 +12,10 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.util.Collection;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Component
 public class DbUserStorage implements UserStorage {
+    public static final String USER_NOT_FOUND = "Пользователь не найден";
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -69,7 +70,7 @@ public class DbUserStorage implements UserStorage {
         return jdbcTemplate.query(sql, new UserRowMapper(), id)
             .stream()
             .findFirst()
-            .orElseThrow(() -> new NoSuchElementException("Пользователь не найден"));
+            .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
     }
 
     @Override

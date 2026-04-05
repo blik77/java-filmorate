@@ -37,8 +37,6 @@ public class Film {
 
     private Set<Genre> genres = new HashSet<>();
 
-    private Set<Long> likes = new HashSet<>();
-
     @AssertTrue(message = ERROR_MIN_FILM_RELEASE_DATE)
     public boolean isReleaseDateValid() {
         if (releaseDate == null) {
