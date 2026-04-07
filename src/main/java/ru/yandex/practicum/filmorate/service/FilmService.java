@@ -47,13 +47,20 @@ public class FilmService {
     }
 
     public List<Film> getPopularFilms(int count) {
-        return filmStorage.getPopularFilms(count);
+        List<Film> films = filmStorage.getPopularFilms(count);
+
+        genreStorage.loadGenresForFilms(films);
+
+        return films;
     }
 
-    public Collection<Film> getAllFilms() {
-        return filmStorage.getAllFilms();
-    }
+    public List<Film> getAllFilms() {
+        List<Film> films = filmStorage.getAllFilms();
 
+        genreStorage.loadGenresForFilms(films);
+
+        return films;
+    }
 
     private void prepareFilm(Film film) {
         if (film.getMpa() != null) {
