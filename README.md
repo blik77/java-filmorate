@@ -44,12 +44,12 @@ SELECT * FROM users
 
 #### Получить все данные о пользователе по его номеру
 ```SQL
-SELECT * FROM users WHERE user_id = 0 /*подставить нужный user_id*/
+SELECT * FROM users WHERE id = 0 /*подставить нужный user_id*/
 ```
 
 #### Получить все данные о фильме по его номеру
 ```SQL
-SELECT * FROM films WHERE film_id = 0 /*подставить нужный film_id*/
+SELECT * FROM films WHERE id = 0 /*подставить нужный film_id*/
 ```
 
 #### Получить всех друзей пользователя по его номеру
@@ -62,8 +62,8 @@ WHERE status = 'CONFIRMED' AND user_id = 0 /*подставить нужный u
 ```SQL
 SELECT f.id, f.name
 FROM films AS f
-JOIN film_genres AS fg ON f.film_id = fg.film_id
-JOIN genres g ON fg.genre_id = g.genre_id
+JOIN film_genres AS fg ON f.id = fg.film_id
+JOIN genres g ON fg.genre_id = g.id
 WHERE g.name = 'PG'  /*подставить нужное название жанра*/
 ```
 
@@ -81,6 +81,6 @@ SELECT code, description FROM mpa_ratings
 ```SQL
 SELECT f.name
 FROM films AS f
-JOIN likes AS l ON f.film_id = l.film_id
+JOIN likes AS l ON f.id = l.film_id
 WHERE l.user_id = 0 /*подставить нужный user_id*/
 ```

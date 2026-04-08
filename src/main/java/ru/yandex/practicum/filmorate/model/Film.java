@@ -33,7 +33,9 @@ public class Film {
     @Positive(message = ERROR_FILM_DURATION_MIN)
     private Integer duration;
 
-    private Set<Long> likes = new HashSet<>();
+    private MpaRating mpa;
+
+    private Set<Genre> genres = new HashSet<>();
 
     @AssertTrue(message = ERROR_MIN_FILM_RELEASE_DATE)
     public boolean isReleaseDateValid() {
