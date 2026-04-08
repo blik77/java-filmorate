@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.storage.genre;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.mapper.GenreRowMapper;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.*;
@@ -51,11 +50,8 @@ public class DbGenreStorage implements GenreStorage {
     }
 
     @Override
-    public void loadGenresForFilms(List<Film> films) {
-        if (films.isEmpty()) return;
-
-        List<Long> filmIds = films.stream().map(Film::getId).toList();
-
+    public Map<Long, Set<Genre>> loadGenresForFilms(List<Long> filmIds) {
+        if (filmIds.isEmpty()) return null;
         String inSql = String.join(",", Collections.nCopies(filmIds.size(), "?"));
 
         String sql = QUERY_GET_GENRES_FOR_FILMS.formatted(inSql);
@@ -70,8 +66,6 @@ public class DbGenreStorage implements GenreStorage {
             filmGenresMap.computeIfAbsent(filmId, k -> new LinkedHashSet<>()).add(genre);
         }, filmIds.toArray());
 
-        for (Film film : films) {
-            film.setGenres(filmGenresMap.getOrDefault(film.getId(), new LinkedHashSet<>()));
-        }
+        return filmGenresMap;
     }
 }

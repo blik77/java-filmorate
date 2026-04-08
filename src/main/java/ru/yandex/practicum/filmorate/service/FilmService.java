@@ -49,7 +49,7 @@ public class FilmService {
     public List<Film> getPopularFilms(int count) {
         List<Film> films = filmStorage.getPopularFilms(count);
 
-        genreStorage.loadGenresForFilms(films);
+        addGenreInfo(films);
 
         return films;
     }
@@ -57,7 +57,7 @@ public class FilmService {
     public List<Film> getAllFilms() {
         List<Film> films = filmStorage.getAllFilms();
 
-        genreStorage.loadGenresForFilms(films);
+        addGenreInfo(films);
 
         return films;
     }
@@ -112,6 +112,16 @@ public class FilmService {
     private void validateReleaseDate(LocalDate releaseDate) {
         if (releaseDate.isBefore(FIRST_FILM_DATE)) {
             throw new IllegalArgumentException("Дата релиза не может быть раньше 28.12.1895");
+        }
+    }
+
+    private void addGenreInfo(List<Film> films) {
+        List<Long> filmIds = films.stream().map(Film::getId).toList();
+
+        Map<Long, Set<Genre>> filmGenresMap = genreStorage.loadGenresForFilms(filmIds);
+
+        for (Film film : films) {
+            film.setGenres(filmGenresMap.getOrDefault(film.getId(), new LinkedHashSet<>()));
         }
     }
 }
